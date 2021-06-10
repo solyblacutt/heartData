@@ -1,5 +1,5 @@
 name: "R Markdown Deployment"
 output: 
   prettydoc::html_pretty:
-  theme: cayman
+  theme: rmdformats::readthedown
 highlight: github
