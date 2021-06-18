@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+
+        <meta name="author" content="Grupo 9R" />
+    
+    
+    <title>Cardiac events predictor</title>
+
+        <script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
+        <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+        <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+        <script src="site_libs/navigation-1.1/tabsets.js"></script>
+        <link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+        <script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+        <link href="site_libs/readthedown-0.1/readthedown.css" rel="stylesheet" />
+        <link href="site_libs/readthedown-0.1/readthedown_fonts_embed.css" rel="stylesheet" />
+        <script src="site_libs/readthedown-0.1/readthedown.js"></script>
+        <script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+        <script src="site_libs/plotly-binding-4.9.3/plotly.js"></script>
+        <script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+        <link href="site_libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+        <script src="site_libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+        <link href="site_libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+        <script src="site_libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+    
+    
+    
+    
+    <!-- tabsets -->
+    <script>
+      $(document).ready(function () {
+	  window.buildTabsets("toc");
+      });
+      $(document).ready(function () {
+	  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+	      $(this).parent().toggleClass('nav-tabs-open')
+	  });
+      });
+    </script>
+
+    <!-- code folding -->
+    
+    <!-- code download -->
+    
+    <!-- tabsets dropdown -->
+
+    <style type="text/css">
+      .tabset-dropdown > .nav-tabs {
+	  display: inline-table;
+	  max-height: 500px;
+	  min-height: 44px;
+	  overflow-y: auto;
+	  background: white;
+	  border: 1px solid #ddd;
+	  border-radius: 4px;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li.active:before {
+	  content: "";
+	  font-family: 'Glyphicons Halflings';
+	  display: inline-block;
+	  padding: 10px;
+	  border-right: 1px solid #ddd;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+	  content: "&#xe258;";
+	  border: none;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+	  content: "";
+	  font-family: 'Glyphicons Halflings';
+	  display: inline-block;
+	  padding: 10px;
+	  border-right: 1px solid #ddd;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li.active {
+	  display: block;
+      }
+
+      .tabset-dropdown > .nav-tabs > li.active a {
+  	  padding: 0 15px !important;
+      }
+
+      .tabset-dropdown > .nav-tabs > li > a,
+      .tabset-dropdown > .nav-tabs > li > a:focus,
+      .tabset-dropdown > .nav-tabs > li > a:hover {
+	  border: none;
+	  display: inline-block;
+	  border-radius: 4px;
+	  background-color: transparent;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+	  display: block;
+	  float: none;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li {
+	  display: none;
+	  margin-left: 0 !important;
+      }
+    </style>
+    
+</head>
+
+<body class="preload">
+
+   	
+         <!-- readthedown start -->   
+   <div id="content" data-toggle="wy-nav-shift">
+     <nav id="nav-top" role="navigation" aria-label="top navigation">
+       <a role="button" href="#" data-toggle="wy-nav-top"><span class="glyphicon glyphicon-menu-hamburger"></span></a>
+     </nav>
+         
+   
+        
+      <h1 class="title">Cardiac events predictor</h1>
+      
+         <!-- readthedown authors -->
+   <div id="sidebar">
+    <h2><a href="#content">Cardiac events predictor</a></h2>
+    <div id="toc">
+      <ul>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#data-analysis">Data Analysis</a>
+      <ul>
+      <li><a href="#gender-analysis">Gender analysis</a></li>
+      <li><a href="#section"></a></li>
+      <li><a href="#diabetes-analysis">Diabetes analysis</a></li>
+      <li><a href="#section-1"></a></li>
+      <li><a href="#age-analysis">Age analysis</a></li>
+      <li><a href="#section-2"></a></li>
+      <li><a href="#pulmonary-hypertension-analysis">Pulmonary hypertension analysis</a></li>
+      <li><a href="#section-3"></a></li>
+      <li><a href="#coronopathy-analysis">Coronopathy analysis</a></li>
+      <li><a href="#section-4"></a></li>
+      <li><a href="#obesity-analysis">Obesity analysis</a></li>
+      <li><a href="#section-5"></a></li>
+      <li><a href="#reasons-for-admission-analysis">Reasons for admission analysis</a></li>
+      <li><a href="#section-6"></a></li>
+      <li><a href="#chronic-obstructive-pulmonary-disease-analysis">Chronic obstructive pulmonary disease analysis</a></li>
+      <li><a href="#section-7"></a></li>
+      </ul></li>
+      <li><a href="#interpretation">Interpretation</a></li>
+      <li><a href="#predictor">Predictor</a></li>
+      <li><a href="#authors">Authors</a></li>
+      </ul>
+    </div>
+    <div id="postamble" data-toggle="wy-nav-shift" class="status">
+                  <p class="author"><span class="glyphicon glyphicon-user"></span> Grupo 9R</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 18/6/2021</p>
+          </div>
+   </div>
+     
+
+   
+      
+   
+<!-- Don't indent these lines or it will mess pre blocks indentation --> 
+<div id="main">
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In order to analyze the given dataset, we have chosen as the focus of our work to evaluate the type of procedure that a patient receives according to different variables that are related to the procedure, which can be surgery or an angioplasty. We decided to study the patients’ gender, age, diabetes condition, pulmonary hypertension, coronaropathy, obesity condition and admission’ reasons in relation to the procedure performed to that same patient. The objective of our dataset analysis is to improve the prediction of cardiac events and provide new, relevant information by combining different variables.</p>
+</div>
+<div id="data-analysis" class="section level1">
+<h1>Data Analysis</h1>
+<div id="gender-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Gender analysis</h2>
+<p>Sex was analyzed as females are associated with a higher ventricular diastolic stiffness. It was also found that women have elevated rates of diastolic dysfunction.</p>
+<div id="women-and-men-percentages" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Women and men percentages</h3>
+<p>We analyzed the amount of male and female patients in our dataset.</p>
+<div id="htmlwidget-81c096e0d74b6029fc8f" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-81c096e0d74b6029fc8f">{"x":{"visdat":{"317c73da2f44":["function () ","plotlyVisDat"]},"cur_data":"317c73da2f44","attrs":{"317c73da2f44":{"labels":["Women","Men"],"values":[18.96,81.04],"textinfo":"label+percent","marker":{"colors":["rgb(203, 102, 1)","rgb(255, 229, 166)"]},"insidetextorientation":"radial","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["Women","Men"],"values":[18.96,81.04],"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["rgb(203, 102, 1)","rgb(255, 229, 166)"],"line":{"color":"rgba(255,255,255,1)"}},"insidetextorientation":"radial","type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-according-to-gender" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure according to gender</h3>
+<p>Several studies found that among patients with myocardial infarction, women have a worse outcome and greater morbidity and mortality than men after receiving angipoplasty, and this is due to a higher incidence of risk factors (<a href="https://www.intramed.net/contenidover.asp?contenidoid=39052"><em>Sex influency in the results of angioplasty for myocardial infarction treatment</em></a>).</p>
+<div id="htmlwidget-d55deeb0f25316bfd2c7" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d55deeb0f25316bfd2c7">{"x":{"visdat":{"317c400e2348":["function () ","plotlyVisDat"]},"cur_data":"317c400e2348","attrs":{"317c400e2348":{"x":{},"y":{},"marker":{"color":"peru"},"text":[27,190],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c400e2348.1":{"x":{},"y":{},"marker":{"color":"papayawhip"},"text":[44,117],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"barmode":"group","xaxis":{"domain":[0,1],"automargin":true,"title":"Gender","type":"category","categoryorder":"array","categoryarray":["Hombres","Mujeres"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["Mujeres","Hombres"],"y":[27,190],"marker":{"color":"peru","line":{"color":"rgba(31,119,180,1)"}},"text":[27,190],"textposition":["auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Mujeres","Hombres"],"y":[44,117],"marker":{"color":"papayawhip","line":{"color":"rgba(255,127,14,1)"}},"text":[44,117],"textposition":["auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="diabetes-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Diabetes analysis</h2>
+<p>Diabetes is a major risk factor for coronary heart disease. This is associated with high cardiovascular mortality: more than three out of four diabetics who die do so from a cause related to atherosclerosis and in 75% of these cases from coronary heart disease. They have a greater number of vessels affected and a higher rate of post - angioplasty restenosis.</p>
+<div id="percentage-of-diabetic-patients" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Percentage of diabetic patients</h3>
+<p>We analyzed diabetic and non diabetic population.</p>
+<div id="htmlwidget-cc063931b27071b843d6" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cc063931b27071b843d6">{"x":{"visdat":{"317c7b393ac1":["function () ","plotlyVisDat"]},"cur_data":"317c7b393ac1","attrs":{"317c7b393ac1":{"labels":["Diabetics","Non diabetics"],"values":[27.53,72.47],"textinfo":"label+percent","marker":{"colors":["rgb(139, 0, 0)","rgb(247, 219, 219)"]},"insidetextorientation":"radial","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["Diabetics","Non diabetics"],"values":[27.53,72.47],"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["rgb(139, 0, 0)","rgb(247, 219, 219)"],"line":{"color":"rgba(255,255,255,1)"}},"insidetextorientation":"radial","type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedures-of-diabetic-patients" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedures of diabetic patients</h3>
+<p>In patients with diabetes the best option according to <a href="http://www.scielo.edu.uy/scielo.php?script=sci_arttext&amp;pid=S1688-04202005000100007"><em>Drs. Bernardo Layerle, Washington Vignolo</em></a> is angioplasty, since it significantly reduces the need for a new, short-term angioplasty in high-caliber vessels. Surgery is considered only in cases of involvement of several vessels, since it has a significantly worse result in diabetics than in non-diabetics.</p>
+<div id="htmlwidget-514a66c6a2facd42a133" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-514a66c6a2facd42a133">{"x":{"visdat":{"317c4a75122c":["function () ","plotlyVisDat"]},"cur_data":"317c4a75122c","attrs":{"317c4a75122c":{"x":{},"y":{},"marker":{"color":"brown"},"text":[72,145],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c4a75122c.1":{"x":{},"y":{},"marker":{"color":"mistyrose"},"text":[31,130],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"barmode":"group","xaxis":{"domain":[0,1],"automargin":true,"title":"Condition","type":"category","categoryorder":"array","categoryarray":["Diabetics","Non diabetics"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["Diabetics","Non diabetics"],"y":[72,145],"marker":{"color":"brown","line":{"color":"rgba(31,119,180,1)"}},"text":[72,145],"textposition":["auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Diabetics","Non diabetics"],"y":[31,130],"marker":{"color":"mistyrose","line":{"color":"rgba(255,127,14,1)"}},"text":[31,130],"textposition":["auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-1" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="age-analysis" class="section level2">
+<h2>Age analysis</h2>
+<p>The octogenarian patients’ group, whose ages start from 80 years old, is constantly growing, and as a consequence their life expectancy also increases.</p>
+<p>The high prevalence of coronary artery disease in this group, along with the continuous development of endovascular treatment through coronary angioplasty, have resulted in a more frequent use of this type of procedure in older patients, according to a study led by <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=6619520"><em>Italian Hospital of Buenos Aires</em></a>. These patients also represent the group with the higher risk at revascularization by surgery, which contributes to the coronary angioplasty procedure increase in this population.</p>
+<div id="htmlwidget-bb224ee980ac783a09c8" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-bb224ee980ac783a09c8">{"x":{"visdat":{"317c88a7874":["function () ","plotlyVisDat"]},"cur_data":"317c88a7874","attrs":{"317c88a7874":{"x":{},"y":{},"marker":{"color":"maroon"},"name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c88a7874.1":{"x":{},"y":{},"marker":{"color":"wheat"},"name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"barmode":"stack","xaxis":{"domain":[0,1],"automargin":true,"title":"Age","type":"category","categoryorder":"array","categoryarray":["0-20","20-30","30-40","40-50","50-60","60-70","70-80","80+"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["0-20","20-30","30-40","40-50","50-60","60-70","70-80","80+"],"y":[0,0,3,16,60,77,45,16],"marker":{"color":"maroon","line":{"color":"rgba(31,119,180,1)"}},"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["0-20","20-30","30-40","40-50","50-60","60-70","70-80","80+"],"y":[3,7,7,18,34,51,34,7],"marker":{"color":"wheat","line":{"color":"rgba(255,127,14,1)"}},"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-2" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="pulmonary-hypertension-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Pulmonary hypertension analysis</h2>
+<p>Pulmonary hypertension is a hemodynamic condition which involves pathology changes in vasculature, with a posterior increase of pulmonary vascular resistance and arterial pressure.</p>
+<div id="patients-with-pulmonary-hypertension" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Patients with pulmonary hypertension</h3>
+<p>According to an article published in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5685130/"><em>The British Journal of Radiology</em></a> , there is a wide range of potential complications associated with pulmonary hypertension, for example, right heart failure and pericardial effusion and tamponade. Therefore, it has been included in this analysis as a patient with this condition should follow a different protocol.</p>
+<div id="htmlwidget-174d8643fbb357be2496" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-174d8643fbb357be2496">{"x":{"visdat":{"317c1aa35bc":["function () ","plotlyVisDat"]},"cur_data":"317c1aa35bc","attrs":{"317c1aa35bc":{"labels":["Pulmonary Hypertension","Not Pulmonary Hypertension"],"values":[17,368],"textinfo":"label+percent","marker":{"colors":["rgb(171, 32, 32)","rgb(255, 217, 195)"]},"insidetextorientation":"radial","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["Pulmonary Hypertension","Not Pulmonary Hypertension"],"values":[17,368],"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["rgb(171, 32, 32)","rgb(255, 217, 195)"],"line":{"color":"rgba(255,255,255,1)"}},"insidetextorientation":"radial","type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-of-people-with-pulmonary-hypertension" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure of people with pulmonary hypertension</h3>
+<p>Procedures of patients with pulmonary hypertension were compared with those without this condition as it is shown in this graphic. As seen, pulmonary hypertension patients have a tendency to undergo surgery rather than angioplasty.</p>
+<div id="htmlwidget-b2c7a2ddc5cc0e581a2e" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b2c7a2ddc5cc0e581a2e">{"x":{"visdat":{"317c175f2f58":["function () ","plotlyVisDat"]},"cur_data":"317c175f2f58","attrs":{"317c175f2f58":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[3,214],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c175f2f58.1":{"x":{},"y":{},"marker":{"color":"peachpuff"},"text":[14,147],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"barmode":"group","xaxis":{"domain":[0,1],"automargin":true,"title":"Condition","type":"category","categoryorder":"array","categoryarray":["No Pulmonary Hypertension","Pulmonary Hypertension"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["Pulmonary Hypertension","No Pulmonary Hypertension"],"y":[3,214],"marker":{"color":"maroon","line":{"color":"rgba(31,119,180,1)"}},"text":[3,214],"textposition":["auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Pulmonary Hypertension","No Pulmonary Hypertension"],"y":[14,147],"marker":{"color":"peachpuff","line":{"color":"rgba(255,127,14,1)"}},"text":[14,147],"textposition":["auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-3" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="coronopathy-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Coronopathy analysis</h2>
+<p>Nowadays, mortality and morbidity associated with cardiac surgeries has decreased. Therefore, surgical therapy to older patients with reconstructible coronary artery disease has incremented by 50%. Unfortunately, older patients referred for cardiac surgery tend to have advanced disease as triple-vessel disease, left main or main equivalent disease, poor left ventricular function as an study led by <a href="https://drive.google.com/file/d/1XO-npz7HO3BMJOLk5qs_UxtE3XOtOt8c/view?usp=sharing"><em>Drs. Vanita Ahuja, Ronnie A. Rosenthal</em></a> shows.</p>
+<div id="people-with-coronopathies" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">People with coronopathies</h3>
+<p>We first analyze the population with one, two, three or none blood vessels involved, as it is shown on the graph.</p>
+<div id="htmlwidget-9a0642f57fba2bc03368" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9a0642f57fba2bc03368">{"x":{"visdat":{"317c60c1d1c":["function () ","plotlyVisDat"]},"cur_data":"317c60c1d1c","attrs":{"317c60c1d1c":{"labels":["Involved blood vessels","One blood vessel 26%","Two blood vessels 30%","Three blood vessels 16%","No blood vessel involved 28%"],"parents":["","Involved blood vessels","Involved blood vessels","Involved blood vessels","Involved blood vessels"],"values":["0","26","30","16","28"],"marker":{"colorscale":"YIOrRd"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"sunburst"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["Involved blood vessels","One blood vessel 26%","Two blood vessels 30%","Three blood vessels 16%","No blood vessel involved 28%"],"parents":["","Involved blood vessels","Involved blood vessels","Involved blood vessels","Involved blood vessels"],"values":["0","26","30","16","28"],"marker":{"color":"rgba(31,119,180,1)","colorscale":"YIOrRd","line":{"color":"rgba(255,255,255,1)"}},"type":"sunburst","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-of-people-with-coronopathies" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure of people with coronopathies</h3>
+<p>As the number of blood vessels involved increases, it is more likely for the patient to have a surgery. However, modern PCI technique and devices help patients with triple vessel disease of relative low Syntax score get rid of surgery.</p>
+<div id="htmlwidget-517f5cb43bfb1a7b042e" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-517f5cb43bfb1a7b042e">{"x":{"visdat":{"317c1aec43da":["function () ","plotlyVisDat"]},"cur_data":"317c1aec43da","attrs":{"317c1aec43da":{"x":{},"y":{},"marker":{"color":"moccasin"},"text":[93,101,23],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c1aec43da.1":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[6,14,37],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of People"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Blood Vessel Number","type":"category","categoryorder":"array","categoryarray":["1 blood vessel","2 blood vessels","3 blood vessels"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["1 blood vessel","2 blood vessels","3 blood vessels"],"y":[93,101,23],"marker":{"color":"moccasin","line":{"color":"rgba(31,119,180,1)"}},"text":[93,101,23],"textposition":["auto","auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["1 blood vessel","2 blood vessels","3 blood vessels"],"y":[6,14,37],"marker":{"color":"maroon","line":{"color":"rgba(255,127,14,1)"}},"text":[6,14,37],"textposition":["auto","auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-4" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="obesity-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Obesity analysis</h2>
+<p>Obese patients are at increased risk of infection within 30 days after receiving heart bypass surgery, according to a series of studies conducted by <a href="https://clustersalud.americaeconomia.com/gestion-hospitalaria/pacientes-obesos-tienen-mayor-riesgo-de-infeccion-tras-una-cirugia-de-bypass"><em>researchers at the University of Alberta at the College of Rehabilitation Medicine</em></a>.</p>
+<div id="people-with-obesity" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">People with obesity</h3>
+<p>Compared with patients with normal body mass index, they found that patients with a BMI greater than 30 were 1.9 times more likely to report infections after bypass surgery.</p>
+<div id="htmlwidget-689bd153bab458467720" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-689bd153bab458467720">{"x":{"visdat":{"317c7db12926":["function () ","plotlyVisDat"]},"cur_data":"317c7db12926","attrs":{"317c7db12926":{"labels":["Obeses","Not obeses"],"values":[3.9,96.1],"textinfo":"label+percent","marker":{"colors":["rgb(139, 0, 0)","rgb(247, 219, 219)"]},"insidetextorientation":"radial","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["Obeses","Not obeses"],"values":[3.9,96.1],"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["rgb(139, 0, 0)","rgb(247, 219, 219)"],"line":{"color":"rgba(255,255,255,1)"}},"insidetextorientation":"radial","type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-of-people-with-obesity" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure of people with obesity</h3>
+<p>Additionally, they found that 88% of patients who received surgery were classified as obese, compared with 55% of patients who received an angioplasty. They explain that the risk of infection after CABG may explain why obese patients are more likely to receive PCI. Given that only 3.9% of the dataset patients are obese, this explanation cannot be clearly seen in our analysis. Beyond the fact that the percentage of obese patients who receive surgery is higher than the percentage of obese patients who receive an angioplasty, the total number of obese people that make up the sample is too small to draw any further conclusions.</p>
+<div id="htmlwidget-82576e312c5540eecdf8" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-82576e312c5540eecdf8">{"x":{"visdat":{"317c488c745c":["function () ","plotlyVisDat"]},"cur_data":"317c488c745c","attrs":{"317c488c745c":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[5,212],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c488c745c.1":{"x":{},"y":{},"marker":{"color":"mistyrose"},"text":[9,152],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Obesity","type":"category","categoryorder":"array","categoryarray":["not obeses","obeses"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["obeses","not obeses"],"y":[5,212],"marker":{"color":"maroon","line":{"color":"rgba(31,119,180,1)"}},"text":[5,212],"textposition":["auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["obeses","not obeses"],"y":[9,152],"marker":{"color":"mistyrose","line":{"color":"rgba(255,127,14,1)"}},"text":[9,152],"textposition":["auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-5" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="reasons-for-admission-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Reasons for admission analysis</h2>
+<p>The reasons for admission that we are interested in analyzing are the programmed ones, and the non-SST ACS (acute coronary syndrome), since they are those in which there is time to think about which procedure is more convenient for the patient, obtaining more reliable data.</p>
+<div id="patients-admission-reasons" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Patients’ admission reasons</h3>
+<p>The graph shows a greater number of patients whose admission has been programmed, and the procedure preference of each case can be seen with the naked eye.</p>
+<div id="htmlwidget-e98f6961eaf00b87f035" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e98f6961eaf00b87f035">{"x":{"visdat":{"317c1bd650e5":["function () ","plotlyVisDat"]},"cur_data":"317c1bd650e5","attrs":{"317c1bd650e5":{"x":{},"y":{},"marker":{"color":"tomato"},"text":[12,1,194,1,0,1,0,0,1,2,5,0,0],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c1bd650e5.1":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[0,92,47,7,2,7,1,3,0,0,1,0,1],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Admission Reason","type":"category","categoryorder":"array","categoryarray":["ANEURISMA AO","CIA","HTPULMONAR","INSUFICIENCIA CARDIACA","MIECTOMIA","MIXOMA Y OTROS TUMORES","OTRA","PROG CORONARIO","PROG VALV","PROGRAMADO TAVI","SCA no SST","SCA SST","SINCOPE"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["SCA no SST","PROG VALV","PROG CORONARIO","ANEURISMA AO","CIA","OTRA","MIXOMA Y OTROS TUMORES","HTPULMONAR","SCA SST","SINCOPE","INSUFICIENCIA CARDIACA","PROGRAMADO TAVI","MIECTOMIA"],"y":[12,1,194,1,0,1,0,0,1,2,5,0,0],"marker":{"color":"tomato","line":{"color":"rgba(31,119,180,1)"}},"text":[12,1,194,1,0,1,0,0,1,2,5,0,0],"textposition":["auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["SCA no SST","PROG VALV","PROG CORONARIO","ANEURISMA AO","CIA","OTRA","MIXOMA Y OTROS TUMORES","HTPULMONAR","SCA SST","SINCOPE","INSUFICIENCIA CARDIACA","PROGRAMADO TAVI","MIECTOMIA"],"y":[0,92,47,7,2,7,1,3,0,0,1,0,1],"marker":{"color":"maroon","line":{"color":"rgba(255,127,14,1)"}},"text":[0,92,47,7,2,7,1,3,0,0,1,0,1],"textposition":["auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-according-to-schedule-admissions" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure according to schedule admissions</h3>
+<div id="htmlwidget-a92f419578e0a2a4526f" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a92f419578e0a2a4526f">{"x":{"visdat":{"317c723c65b5":["function () ","plotlyVisDat"]},"cur_data":"317c723c65b5","attrs":{"317c723c65b5":{"x":{},"y":{},"marker":{"color":"tomato"},"text":[12,1,194],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c723c65b5.1":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[0,92,47],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Scheduled admissions","type":"category","categoryorder":"array","categoryarray":["PROG CORONARIO","PROG VALV","SCA no SST"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["SCA no SST","PROG VALV","PROG CORONARIO"],"y":[12,1,194],"marker":{"color":"tomato","line":{"color":"rgba(31,119,180,1)"}},"text":[12,1,194],"textposition":["auto","auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["SCA no SST","PROG VALV","PROG CORONARIO"],"y":[0,92,47],"marker":{"color":"maroon","line":{"color":"rgba(255,127,14,1)"}},"text":[0,92,47],"textposition":["auto","auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-6" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="chronic-obstructive-pulmonary-disease-analysis" class="section level2 tabset tabset-fade tabset-pills unnumbered">
+<h2 class="tabset tabset-fade tabset-pills unnumbered">Chronic obstructive pulmonary disease analysis</h2>
+<p>Chronic obstructive pulmonary disease (COPD/EPOC) is the third leading cause of death.</p>
+<div id="epoc-population" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">EPOC population</h3>
+<p>More than 11 million Americans are diagnosed with COPD and it is estimated a 13 million people live with this undiagnosed disease (<a href="https://www.sciencedirect.com/science/article/abs/pii/S0012369218305774"><em>COPD Advanced Patient Management. CME Resource Center</em></a>). Here we identify population with COPD in our dataset.</p>
+<div id="htmlwidget-dee0538bcebf1b672261" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dee0538bcebf1b672261">{"x":{"visdat":{"317c4e707618":["function () ","plotlyVisDat"]},"cur_data":"317c4e707618","attrs":{"317c4e707618":{"labels":["EPOC patients","Non EPOC patients"],"values":[26.23,73.77],"textinfo":"label+percent","marker":{"colors":["rgb(102, 0, 0)","rgb(255, 229, 166)"]},"insidetextorientation":"radial","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["EPOC patients","Non EPOC patients"],"values":[26.23,73.77],"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["rgb(102, 0, 0)","rgb(255, 229, 166)"],"line":{"color":"rgba(255,255,255,1)"}},"insidetextorientation":"radial","type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="procedure-of-patients-with-epoc" class="section level3 unnumbered">
+<h3 class="unnumbered unnumbered">Procedure of patients with EPOC</h3>
+<p>In this graphic we analyze patients’ procedures according to if they have COPD disease or not.</p>
+<div id="htmlwidget-ba603bad1c8754d31e86" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ba603bad1c8754d31e86">{"x":{"visdat":{"317c711e7faf":["function () ","plotlyVisDat"]},"cur_data":"317c711e7faf","attrs":{"317c711e7faf":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[10,207],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317c711e7faf.1":{"x":{},"y":{},"marker":{"color":"moccasin"},"text":[6,155],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Conditions","type":"category","categoryorder":"array","categoryarray":["EPOC patients","Non EPOC patients"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["EPOC patients","Non EPOC patients"],"y":[10,207],"marker":{"color":"maroon","line":{"color":"rgba(31,119,180,1)"}},"text":[10,207],"textposition":["auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["EPOC patients","Non EPOC patients"],"y":[6,155],"marker":{"color":"moccasin","line":{"color":"rgba(255,127,14,1)"}},"text":[6,155],"textposition":["auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-7" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+</div>
+<div id="interpretation" class="section level1">
+<h1>Interpretation</h1>
+<div id="percentage-of-procedure-of-patients-with-321-injured-blood-vessels" class="section level4">
+<h4>Percentage of procedure of patients with 3/2/1 injured blood vessels</h4>
+<p>According to a clinical study carried out in Mexico by <a href="http://www.scielo.org.mx/scielo.php?script=sci_arttext&amp;pid=S0188-21982012000200004"><em>Carlos A Solis-Olivares and Juan M Solis-Soto</em></a>, in the last three decades, percutaneous coronary intervention (PCI) has overtaken coronary artery bypass grafting (CRVC) as the preferred treatment modality for atherosclerotic ischemic heart disease (IC) in the world. The effectiveness of PCI in the treatment of significant myocardial ischemia caused by focal occlusion of one or two coronary vessels is unquestionable. However, its results in the treatment of multivessel coronary disease (CVD), defined as the obstruction of three coronary arteries or of two with involvement of the proximal portion of the left anterior descending artery (LAD), have been less satisfactory.</p>
+<p>An observational, ambispective study was conducted, with longitudinal and comparative follow-up of a number of patients with a diagnosis of CVD treated by CRVC. The objective of this study was to compare the clinical evolution of these patients after their percutaneous or surgical revascularization. Finally, the results indicate that those patients with a higher cardiovascular risk, more complex coronary anatomy and trivascular disease, generally receive treatment with CRVC, with PCI being used more frequently in patients with lesions of two coronary arteries.</p>
+<div style="display:flex">
+<div id="htmlwidget-1d7ebdf4edd026540383" style="width:33%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1d7ebdf4edd026540383">{"x":{"visdat":{"317c2b2279b5":["function () ","plotlyVisDat"]},"cur_data":"317c2b2279b5","attrs":{"317c2b2279b5":{"labels":["1 blood vessel","Angioplasty 92.08%","Surgery 5.94%"],"parents":["","1 blood vessel","1 blood vessel"],"values":[0,92.08,5.94],"marker":{"colorscale":"YIOrRd"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"sunburst"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["1 blood vessel","Angioplasty 92.08%","Surgery 5.94%"],"parents":["","1 blood vessel","1 blood vessel"],"values":[0,92.08,5.94],"marker":{"color":"rgba(31,119,180,1)","colorscale":"YIOrRd","line":{"color":"rgba(255,255,255,1)"}},"type":"sunburst","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0a5015ceb65f5caeccac" style="width:33%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0a5015ceb65f5caeccac">{"x":{"visdat":{"317c28e97bda":["function () ","plotlyVisDat"]},"cur_data":"317c28e97bda","attrs":{"317c28e97bda":{"labels":["2 blood vessels","Angioplasty 86.32%","Surgery 11.97%"],"parents":["","2 blood vessels","2 blood vessels"],"values":[0,86.32,11.97],"marker":{"colorscale":"YIOrRd"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"sunburst"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["2 blood vessels","Angioplasty 86.32%","Surgery 11.97%"],"parents":["","2 blood vessels","2 blood vessels"],"values":[0,86.32,11.97],"marker":{"color":"rgba(31,119,180,1)","colorscale":"YIOrRd","line":{"color":"rgba(255,255,255,1)"}},"type":"sunburst","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ea28e1b43d8d9f889c5d" style="width:33%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ea28e1b43d8d9f889c5d">{"x":{"visdat":{"317c1ff81987":["function () ","plotlyVisDat"]},"cur_data":"317c1ff81987","attrs":{"317c1ff81987":{"labels":["3 blood vessels","Surgery 61.67%","Angioplasty 38.33%"],"parents":["","3 blood vessels","3 blood vessels"],"values":[0,61.67,38.33],"marker":{"colorscale":"YIOrRd"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"sunburst"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"labels":["3 blood vessels","Surgery 61.67%","Angioplasty 38.33%"],"parents":["","3 blood vessels","3 blood vessels"],"values":[0,61.67,38.33],"marker":{"color":"rgba(31,119,180,1)","colorscale":"YIOrRd","line":{"color":"rgba(255,255,255,1)"}},"type":"sunburst","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>The next graph is a summary of some of the variables analyzed before.</p>
+<div id="htmlwidget-9cdf25cb689362fb28c9" style="width:768px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9cdf25cb689362fb28c9">{"x":{"visdat":{"317cc744064":["function () ","plotlyVisDat"]},"cur_data":"317cc744064","attrs":{"317cc744064":{"x":{},"y":{},"marker":{"color":"tomato"},"text":[5,72,1,21,10],"textposition":"auto","name":"Angioplasty","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"317cc744064.1":{"x":{},"y":{},"marker":{"color":"maroon"},"text":[9,31,9,22,6],"textposition":"auto","name":"Surgery","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of people"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Conditions","type":"category","categoryorder":"array","categoryarray":["Complex cronary anatomy","Diabetic","EPOC","Obeses","Pulmonary Hypertension"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["Obeses","Diabetic","Pulmonary Hypertension","Complex cronary anatomy","EPOC"],"y":[5,72,1,21,10],"marker":{"color":"tomato","line":{"color":"rgba(31,119,180,1)"}},"text":[5,72,1,21,10],"textposition":["auto","auto","auto","auto","auto"],"name":"Angioplasty","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Obeses","Diabetic","Pulmonary Hypertension","Complex cronary anatomy","EPOC"],"y":[9,31,9,22,6],"marker":{"color":"maroon","line":{"color":"rgba(255,127,14,1)"}},"text":[9,31,9,22,6],"textposition":["auto","auto","auto","auto","auto"],"name":"Surgery","type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="predictor" class="section level1">
+<h1>Predictor</h1>
+<div id="variables-election" class="section level4">
+<h4>Variables election</h4>
+<p>Variables were chosen taking into account the information previously analyzed. However, not all variables were selected in order to generate the predictor. Pulmonary hypertension, obesity or chronic obstructive pulmonary disease are some examples. This variables do not contain enough information to make an accurate prediction.</p>
+<p>Ages were separated into intervals of young adults (0-30 years old), adults (31-55 years old) and elderly (56-100 years old). It was considered that elderly population are in a higher risk during a surgery, that is why major procedure in this age interval is angioplasty.</p>
+<p>Number of injured blood vessels was considered as analysis showed patients with one blood vessel involved have a major tendency to experience angioplasty rather than surgery. In contrast, three injured blood vessels were related to patients undergoing surgery.</p>
+<p>It was kept into account that the admissions’ reasons with more prevalence were coronary programations, valv. programations and non-SST ACS (acute coronary syndrome). Predictions were made with these three admissions’ reasons.</p>
+<p>Patients’ conditions such as diabetes are considered for predictions as is categorized as high risk factor and must be handled minutely.</p>
+</div>
+<div id="model-election" class="section level4">
+<h4>Model election</h4>
+<p>We have chosen the Random Forest Model for the predictor because it was considered the most suitable for the dataset. Once generated the model, it was tested using the data of 346 patients. From these, our model predicted surgery with an error of 24% while angioplasty was predicted with an error of 9%.</p>
+<p><img src="pictures/predictor.png" width="60%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="auroc-curve" class="section level4">
+<h4>AUROC curve</h4>
+<p>The AUROC curve represent the ratios between false positives and false negatives. It is used to measure the efficiency of the model using the confusion matrix and it is done in the test data.</p>
+<p><img src="pictures/image.png" width="95%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="authors" class="section level1">
+<h1>Authors</h1>
+<div style="display:flex">
+<div class="figure">
+<img src="pictures/Picture9.jpg" alt="[*Agustina Verschoor*](mailto: agustina.verschoor@ing.austral.edu.ar)" width="85%" />
+<p class="caption">
+<a href="mailto:%20agustina.verschoor@ing.austral.edu.ar"><em>Agustina Verschoor</em></a>
+</p>
+</div>
+<div class="figure">
+<img src="pictures/Picture12.jpg" alt="[*Sofia Tartara Moroni*](mailto: sofia.tartara@ing.austral.edu.ar)" width="85%" />
+<p class="caption">
+<a href="mailto:%20sofia.tartara@ing.austral.edu.ar"><em>Sofia Tartara Moroni</em></a>
+</p>
+</div>
+<div class="figure">
+<img src="pictures/Picture10.jpg" alt="[*Justina Galarce*](mailto: justina.galarce@ing.austral.edu.ar)" width="85%" />
+<p class="caption">
+<a href="mailto:%20justina.galarce@ing.austral.edu.ar"><em>Justina Galarce</em></a>
+</p>
+</div>
+<div class="figure">
+<img src="pictures/Picture17.jpg" alt="[*Solange Blacutt*](mailto: solange.blacutt@ing.austral.edu.ar)" width="85%" />
+<p class="caption">
+<a href="mailto:%20solange.blacutt@ing.austral.edu.ar"><em>Solange Blacutt</em></a>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+   
+   
+            
+      
+
+  <script>
+    $(document).ready(function () {
+
+			
+ 		
+	    });
+  </script>
+
+
+
+    <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+	document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+  
+</body>
+</html>
