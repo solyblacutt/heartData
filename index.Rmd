@@ -1,0 +1,703 @@
+---
+title: "Cardiac events predictor"
+author: "Grupo 9R"
+date: "18/6/2021"
+output: rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+library(plotrix)
+library(rmdformats)
+library(ggplot2)
+library(treemap)
+library(d3Tree)
+library(plotly)
+library(readxl)
+dataset <- read_excel("C:/Users/solyb/OneDrive/Escritorio/dataset.xlsx")
+```
+# Introduction
+
+
+In order to analyze the given dataset, we have chosen as the focus of our work to evaluate the type of procedure that a patient receives according to different variables that are related to the procedure, which can be surgery or an angioplasty. We decided to study the patients’ gender, age, diabetes condition, pulmonary hypertension, coronaropathy, obesity condition and admission’ reasons in relation to the procedure performed to that same patient. The objective of our dataset analysis is to improve the prediction of cardiac events and provide new, relevant information by combining different variables.
+
+
+# Data Analysis 
+
+
+## Gender analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Sex was analyzed as females are associated with a higher ventricular diastolic stiffness. It was also found that women have elevated rates of diastolic dysfunction.
+
+### Women and men percentages {- .unnumbered}
+
+We analyzed the amount of male and female patients in our dataset. 
+```{r gender, echo=FALSE}
+mujeres <- subset(dataset, dataset$SEXO == "FEME")
+hombres <- subset(dataset, dataset$SEXO == "MASC")
+mujeresNum <- dim(mujeres)[1]
+hombresNum <- dim(hombres)[1]
+totalDePacientes <- dim(dataset)[1]
+mujeresPerc <- round((mujeresNum*100)/totalDePacientes, 2)
+hombresPerc <- round((hombresNum*100)/totalDePacientes, 2)
+notObesesPerc <- round((hombresNum*100)/totalDePacientes, 2)
+labels = c('Women','Men')
+values = c(mujeresPerc, hombresPerc)
+colors <- c('rgb(203, 102, 1)', 'rgb(255, 229, 166)')
+fig <- plot_ly(type='pie', labels=labels, values=values, 
+               textinfo='label+percent',
+                 marker=list(colors=colors),
+               insidetextorientation='radial')
+fig
+```
+
+### Procedure according to gender {- .unnumbered}
+
+Several studies found that among patients with myocardial infarction, women have a worse outcome and greater morbidity and mortality than men after receiving angipoplasty, and this is due to a higher incidence of risk factors [*Sex influency in the results of angioplasty for myocardial infarction treatment*](https://www.intramed.net/contenidover.asp?contenidoid=39052).
+
+```{r genderP, echo=FALSE}
+Gender <- c("Mujeres", "Hombres")
+mujeres <- subset(dataset, dataset$SEXO == "FEME")
+mujeresAng <- subset(mujeres, mujeres$PROCEDIMIENTO == "ANGIOPLASTIA")
+numMujeresAng <- dim(mujeresAng)[1]
+mujeresSur <- subset(mujeres, mujeres$PROCEDIMIENTO == "CIRUGIA")
+numMujeresSur <- dim(mujeresSur)[1]
+hombres <- subset(dataset, dataset$SEXO == "MASC")
+hombresAng <- subset(hombres, hombres$PROCEDIMIENTO == "ANGIOPLASTIA")
+numHombresAng <- dim(hombresAng)[1]
+hombresSur <- subset(hombres, hombres$PROCEDIMIENTO == "CIRUGIA")
+numHombresSur <- dim(hombresSur)[1]
+Angioplastia <- c(numMujeresAng, numHombresAng)
+Surgery <- c(numMujeresSur, numHombresSur)
+data <- data.frame(Gender, Angioplastia, Surgery)
+fig1 <- plot_ly(data, x = ~Gender, y = ~Angioplastia, type = 'bar', name = 'Angioplasty',  marker = list(color = 'peru'), text = Angioplastia, textposition = 'auto')
+fig1 <- fig1 %>% add_trace(y = ~Surgery, name = 'Surgery',  marker = list(color = 'papayawhip'), text = Surgery, textposition = 'auto')
+fig1 <- fig1 %>% layout(yaxis = list(title = 'Number of people'), barmode = 'group')
+fig1
+```
+## {.unnumbered}
+
+
+## Diabetes analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Diabetes is a major risk factor for coronary heart disease. This is associated with high cardiovascular mortality: more than three out of four diabetics who die do so from a cause related to atherosclerosis and in 75% of these cases from coronary heart disease.They have a greater number of vessels affected and a higher rate of post - angioplasty restenosis.
+
+### Percentage of diabetic patients {- .unnumbered}
+
+We analyzed diabetic and non diabetic population.
+```{r diabetes, echo=FALSE}
+diabetic <- subset(dataset, dataset$DIABETES == '1')
+notDiabetic <- subset(dataset, dataset$DIABETES == '0')
+diabeticNum <- dim(diabetic)[1]
+notDiabeticNum <- dim(notDiabetic)[1]
+total <- dim(dataset)[1]
+diabeticPerc <- round((diabeticNum*100)/total, 2)
+notdiabeticPerc <- round((notDiabeticNum*100)/total, 2)
+labels = c('Diabetics','Non diabetics')
+values = c(diabeticPerc, notdiabeticPerc)
+colors <- c('rgb(139, 0, 0)', 'rgb(247, 219, 219)')
+fig <- plot_ly(type='pie', labels=labels, values=values, 
+               textinfo='label+percent',
+               marker=list(colors=colors),
+               insidetextorientation='radial')
+fig
+```
+
+### Procedures of diabetic patients {- .unnumbered}
+
+In patients with diabetes the best option according to [*Drs. Bernardo Layerle, Washington Vignolo*](http://www.scielo.edu.uy/scielo.php?script=sci_arttext&pid=S1688-04202005000100007) is angioplasty, since it significantly reduces the need for a new, short-term angioplasty in high-caliber vessels.
+Surgery is considered only in cases of involvement of several vessels, since it has a significantly worse result in diabetics than in non-diabetics
+
+```{r diabetesP, echo=FALSE}
+Condition <- c("Diabetics", "Non diabetics")
+diabetics <- subset(dataset, dataset$DIABETES == '1')
+diabeticAng <- subset(diabetics, diabetics$PROCEDIMIENTO == "ANGIOPLASTIA")
+numdiabeticAng <- dim(diabeticAng)[1]
+diabeticSur <- subset(diabetics, diabetics$PROCEDIMIENTO == "CIRUGIA")
+NumdiabeticSur <- dim(diabeticSur)[1]
+##
+Nondiabetics <- subset(dataset, dataset$DIABETES == '0')
+NondiabeticAng <- subset(Nondiabetics, Nondiabetics$PROCEDIMIENTO == "ANGIOPLASTIA")
+numNondiabeticAng <- dim(NondiabeticAng)[1]
+NondiabeticSur <- subset(Nondiabetics, Nondiabetics$PROCEDIMIENTO == "CIRUGIA")
+NumNondiabeticSur <- dim(NondiabeticSur)[1]
+Angioplastia <- c(numdiabeticAng, numNondiabeticAng)
+Surgery <- c(NumdiabeticSur, NumNondiabeticSur)
+data <- data.frame(Condition, Angioplastia, Surgery)
+fig <- plot_ly(data, x = ~Condition, y = ~Angioplastia, type = 'bar', name = 'Angioplasty',  marker = list(color = 'brown'), text = Angioplastia, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~Surgery, name = 'Surgery',  marker = list(color = 'mistyrose'), text = Surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), barmode = 'group')
+fig
+```
+## {.unnumbered}
+
+
+## Age analysis
+
+The octogenarian patients' group, whose ages start from 80 years old, is constantly growing, and as a consequence their life expectancy also increases.
+
+The high prevalence of coronary artery disease in this group, along with the continuous development of endovascular treatment through coronary angioplasty, have resulted in a more frequent use of this type of procedure in older patients, according to a study led by [*Italian Hospital of Buenos Aires*](https://dialnet.unirioja.es/servlet/articulo?codigo=6619520). These patients also represent the group with the higher risk at revascularization by surgery, which contributes to the coronary angioplasty procedure increase in this population.
+ 
+```{r ageP, echo=FALSE}
+Age <- c("0-20", "20-30" , "30-40" , "40-50" , "50-60" , "60-70", "70-80", "80+")
+edad1 <- subset(dataset, dataset$EDAD <= 20)
+edad2 <- subset(dataset, dataset$EDAD > 20 & dataset$EDAD <= 30)
+edad3 <- subset(dataset, dataset$EDAD > 30 & dataset$EDAD <= 40)
+edad4 <- subset(dataset, dataset$EDAD > 40 & dataset$EDAD <= 50)
+edad5 <- subset(dataset, dataset$EDAD > 50 & dataset$EDAD <= 60)
+edad6 <- subset(dataset, dataset$EDAD > 60 & dataset$EDAD <= 70)
+edad7 <- subset(dataset, dataset$EDAD > 70 & dataset$EDAD <= 80)
+edad8 <- subset(dataset, dataset$EDAD > 80)
+edad1Ang <- subset(edad1, edad1$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad1Ang <- dim(edad1Ang)[1]
+edad1Sur <- subset(edad1, edad1$PROCEDIMIENTO == "CIRUGIA")
+numEdad1Sur <- dim(edad1Sur)[1]
+##
+edad1Ang <- subset(edad1, edad1$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad1Ang <- dim(edad1Ang)[1]
+edad1Sur <- subset(edad1, edad1$PROCEDIMIENTO == "CIRUGIA")
+numEdad1Sur <- dim(edad1Sur)[1]
+##
+edad2Ang <- subset(edad2, edad2$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad2Ang <- dim(edad2Ang)[1]
+edad2Sur <- subset(edad2, edad2$PROCEDIMIENTO == "CIRUGIA")
+numEdad2Sur <- dim(edad2Sur)[1]
+##
+edad3Ang <- subset(edad3, edad3$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad3Ang <- dim(edad3Ang)[1]
+edad3Sur <- subset(edad3, edad3$PROCEDIMIENTO == "CIRUGIA")
+numEdad3Sur <- dim(edad3Sur)[1]
+##
+edad4Ang <- subset(edad4, edad4$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad4Ang <- dim(edad4Ang)[1]
+edad4Sur <- subset(edad4, edad4$PROCEDIMIENTO == "CIRUGIA")
+numEdad4Sur <- dim(edad4Sur)[1]
+##
+edad5Ang <- subset(edad5, edad5$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad5Ang <- dim(edad5Ang)[1]
+edad5Sur <- subset(edad5, edad5$PROCEDIMIENTO == "CIRUGIA")
+numEdad5Sur <- dim(edad5Sur)[1]
+##
+edad6Ang <- subset(edad6, edad6$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad6Ang <- dim(edad6Ang)[1]
+edad6Sur <- subset(edad6, edad6$PROCEDIMIENTO == "CIRUGIA")
+numEdad6Sur <- dim(edad6Sur)[1]
+##
+edad7Ang <- subset(edad7, edad7$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad7Ang <- dim(edad7Ang)[1]
+edad7Sur <- subset(edad7, edad7$PROCEDIMIENTO == "CIRUGIA")
+numEdad7Sur <- dim(edad7Sur)[1]
+##
+edad8Ang <- subset(edad8, edad8$PROCEDIMIENTO == "ANGIOPLASTIA")
+numEdad8Ang <- dim(edad8Ang)[1]
+edad8Sur <- subset(edad8, edad8$PROCEDIMIENTO == "CIRUGIA")
+numEdad8Sur <- dim(edad8Sur)[1]
+##
+Angioplastiaa <- c(numEdad1Ang, numEdad2Ang, numEdad3Ang,numEdad4Ang,numEdad5Ang,numEdad6Ang,numEdad7Ang,numEdad8Ang)
+Surgeryy <- c(numEdad1Sur,numEdad2Sur,numEdad3Sur,numEdad4Sur,numEdad5Sur,numEdad6Sur,numEdad7Sur,numEdad8Sur)
+datass <- data.frame(Age, Angioplastiaa, Surgeryy)
+fig <- plot_ly(datass, x = ~Age, y = ~Angioplastiaa, type = 'bar', name = 'Angioplasty',  marker = list(color = 'maroon'))
+fig <- fig %>% add_trace(y = ~Surgeryy, name = 'Surgery',  marker = list(color = 'wheat'))
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), barmode = 'stack')
+fig
+```
+## {.unnumbered}
+
+
+## Pulmonary hypertension analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Pulmonary hypertension is a hemodynamic condition which involves pathology changes in vasculature, with a posterior increase of pulmonary vascular resistance and arterial pressure.
+
+### Patients with pulmonary hypertension {- .unnumbered}
+
+According to an article published in [*The British Journal of Radiology*](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5685130/) , there is a wide range of potential complications associated with pulmonary hypertension, for example, right heart failure and pericardial effusion and tamponade. Therefore, it has been included in this analysis as a patient with this condition should follow a different protocol.
+
+```{r hp, echo=FALSE}
+hyperTdata <- subset(dataset, dataset$`HIPERTENSION PULMONAR` == 1 | dataset$`HIPERTENSION PULMONAR` == 2)
+hyperTPerc <- round(dim(hyperTdata)[1], 2)
+nonHyperT <- subset(dataset, dataset$`HIPERTENSION PULMONAR` == 0)
+nonHyperTPerc <- round(dim(nonHyperT)[1], 2)
+labels = c('Pulmonary Hypertension','Not Pulmonary Hypertension')
+values = c(hyperTPerc, nonHyperTPerc)
+colors <- c('rgb(171, 32, 32)', 'rgb(255, 217, 195)')
+fig <- plot_ly(type='pie', labels=labels, values=values, 
+               textinfo='label+percent',
+              marker=list(colors=colors),
+               insidetextorientation='radial')
+fig
+```
+
+### Procedure of people with pulmonary hypertension {- .unnumbered}
+
+Procedures of patients with pulmonary hypertension were compared with those without this condition as it is shown in this graphic. As seen, pulmonary hypertension patients have a tendency to undergo  surgery rather than angioplasty.
+```{r hpP, echo=FALSE}
+hypertension <- dim(hyperTdata)[1]
+hypertensionAngio <- dim(subset(hyperTdata, hyperTdata$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+hypertensionSurg <- dim(subset(hyperTdata, hyperTdata$PROCEDIMIENTO == "CIRUGIA"))[1]
+nonHyperTdata <- subset(dataset, dataset$`HIPERTENSION PULMONAR` == 0)
+nonHypertension <- dim(nonHyperTdata)[1]
+nonHypertensionAngio <- dim(subset(nonHyperTdata, nonHyperTdata$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+nonHypertensionSurg <- dim(subset(nonHyperTdata, nonHyperTdata$PROCEDIMIENTO == "CIRUGIA"))[1]
+Condition <- c("Pulmonary Hypertension","No Pulmonary Hypertension" )
+angioplasty <- c(hypertensionAngio, nonHypertensionAngio)
+surgery <- c(hypertensionSurg, nonHypertensionSurg)
+data <- data.frame(Condition, angioplasty, surgery)
+fig <- plot_ly(data, x = ~Condition, y = ~angioplasty, type = 'bar', name = 'Angioplasty', marker = list(color = 'maroon'), text = angioplasty, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~surgery, name = 'Surgery', marker = list(color = 'peachpuff'), text = surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), barmode = 'group')
+fig
+```
+## {.unnumbered}
+
+
+## Coronopathy analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Nowadays, mortality and morbidity associated with cardiac surgeries has decreased. Therefore, surgical therapy to older patients with reconstructible coronary artery disease has incremented by 50%. Unfortunately, older patients referred for cardiac surgery tend to have advanced disease as triple-vessel disease, left main or main equivalent disease, poor left ventricular function as an study led by [*Drs. Vanita Ahuja, Ronnie A. Rosenthal*](https://drive.google.com/file/d/1XO-npz7HO3BMJOLk5qs_UxtE3XOtOt8c/view?usp=sharing) shows.
+
+### People with coronopathies {- .unnumbered}
+
+We first analyze the population with one, two, three or none blood vessels involved, as it is shown on the graph.
+```{r corona, echo=FALSE}
+#numero de vasos
+coronariopatia_1_vaso <- subset(dataset, dataset$`Resumen Coronariopatia` == "1 vaso")
+coronariopatia_2_vaso <- subset(dataset, dataset$`Resumen Coronariopatia` == "2 vasos")
+coronariopatia_3_vaso <- subset(dataset, dataset$`Resumen Coronariopatia` == "3 vasos")
+vaso1Perc <- round(dim(coronariopatia_1_vaso)[1]/dim(dataset)[1], 2) * 100
+vaso2Perc <- round(dim(coronariopatia_2_vaso)[1]/dim(dataset)[1], 2) * 100
+vaso3Perc <- round(dim(coronariopatia_3_vaso)[1]/dim(dataset)[1], 2) * 100
+noVasoPerc <- 100 - vaso1Perc - vaso2Perc - vaso3Perc
+vaso1Percc <- paste(vaso1Perc, "%", sep = "")
+vaso2Percc <- paste(vaso2Perc, "%", sep = "")
+vaso3Percc <- paste(vaso3Perc, "%", sep = "")
+noVasoPercc <- paste(noVasoPerc, "%", sep = "") 
+
+onebv <- paste("One blood vessel", vaso1Percc)
+dosbv <- paste("Two blood vessels", vaso2Percc)
+tresbv <- paste("Three blood vessels", vaso3Percc)
+nonbv<- paste("No blood vessel involved", noVasoPercc)
+
+plot_ly(
+  labels = c("Involved blood vessels",onebv, dosbv, tresbv, nonbv),
+  parents = c("", "Involved blood vessels", "Involved blood vessels", "Involved blood vessels", "Involved blood vessels"),
+  values = c("0", vaso1Perc, vaso2Perc, vaso3Perc, noVasoPerc),
+  type = 'sunburst',
+  marker=list(colorscale='YIOrRd')
+)
+```
+
+### Procedure of people with coronopathies {- .unnumbered}
+
+As the number of blood vessels involved increases, it is more likely for the patient to have a surgery. However, modern PCI technique and devices help patients with triple vessel disease of relative low Syntax score get rid of surgery.
+
+```{r coronaP, echo=FALSE}
+#1 vaso y procedimientos
+vaso_1_cirugia <- dim(subset(coronariopatia_1_vaso, coronariopatia_1_vaso$PROCEDIMIENTO == "CIRUGIA"))[1]
+vaso_1_angioplastia <- dim(subset(coronariopatia_1_vaso, coronariopatia_1_vaso$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+#2 vasos y procedimientos
+vaso_2_cirugia <- dim(subset(coronariopatia_2_vaso, coronariopatia_2_vaso$PROCEDIMIENTO == "CIRUGIA"))[1]
+vaso_2_angioplastia <- dim(subset(coronariopatia_2_vaso, coronariopatia_2_vaso$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+#3 vasos y procedimientos
+vaso_3_cirugia <- dim(subset(coronariopatia_3_vaso, coronariopatia_3_vaso$PROCEDIMIENTO == "CIRUGIA"))[1]
+vaso_3_angioplastia <- dim(subset(coronariopatia_3_vaso, coronariopatia_3_vaso$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+BloodVesselNumber <- c("1 blood vessel", "2 blood vessels", "3 blood vessels")
+angioplastia <- c(vaso_1_angioplastia, vaso_2_angioplastia, vaso_3_angioplastia)
+surgery <- c(vaso_1_cirugia, vaso_2_cirugia, vaso_3_cirugia)
+data <- data.frame(BloodVesselNumber, angioplastia, surgery)
+fig <- plot_ly(data, x = ~BloodVesselNumber, y = ~angioplastia, type = 'bar', name = 'Angioplasty', marker = list(color = 'moccasin'), text = angioplastia, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~surgery, name = 'Surgery', marker = list(color = 'maroon'), text = surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of People'), xaxis = list(title = 'Blood Vessel Number'), barmode = 'group')
+fig
+```
+## {.unnumbered}
+
+
+## Obesity analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Obese patients are at increased risk of infection within 30 days after receiving heart bypass surgery, according to a series of studies conducted by [*researchers at the University of Alberta at the College of Rehabilitation Medicine*](https://clustersalud.americaeconomia.com/gestion-hospitalaria/pacientes-obesos-tienen-mayor-riesgo-de-infeccion-tras-una-cirugia-de-bypass).
+
+### People with obesity {- .unnumbered}
+
+Compared with patients with normal body mass index, they found that patients with a BMI greater than 30 were 1.9 times more likely to report infections after bypass surgery.
+
+```{r obesity, echo=FALSE}
+obeses <- subset(dataset, dataset$`OBESIDAD MORBIDA` == '1')
+notObeses <- subset(dataset, dataset$`OBESIDAD MORBIDA` == '0')
+obesesNum <- dim(obeses)[1]
+notObesesNum <- dim(notObeses)[1]
+totalObeses <- dim(dataset)[1]
+ObesesPerc <- round((obesesNum*100)/totalObeses, 2)
+notObesesPerc <- round((notObesesNum*100)/totalObeses, 2)
+labels = c('Obeses','Not obeses')
+values = c(ObesesPerc, notObesesPerc)
+colors <- c('rgb(139, 0, 0)', 'rgb(247, 219, 219)')
+fig <- plot_ly(type='pie', labels=labels, values=values, 
+               textinfo='label+percent',
+                marker=list(colors=colors),
+               insidetextorientation='radial')
+fig
+```
+
+### Procedure of people with obesity {- .unnumbered}
+
+Additionally, they found that 88% of patients who received surgery were classified as obese, compared with 55% of patients who received an angioplasty. They explain that the risk of infection after CABG may explain why obese patients are more likely to receive PCI.
+Given that only 3.9% of the dataset patients are obese, this explanation cannot be clearly seen in our analysis. Beyond the fact that the percentage of obese patients who receive surgery is higher than the percentage of obese patients who receive an angioplasty, the total number of obese people that make up the sample is too small to draw any further conclusions.
+
+```{r obesityP, echo=FALSE}
+Condition <- c("obeses", "not obeses")
+obeses <- subset(dataset, dataset$`OBESIDAD MORBIDA` == '1')
+obesesAng <- subset(obeses, obeses$PROCEDIMIENTO == "ANGIOPLASTIA")
+numObesesAng <- dim(obesesAng)[1]
+obesesSur <- subset(obeses, obeses$PROCEDIMIENTO == "CIRUGIA")
+numObesesSur <- dim(obesesSur)[1]
+##
+notObeses <- subset(dataset, dataset$`OBESIDAD MORBIDA`== '0')
+notObesesAng <- subset(notObeses, notObeses$PROCEDIMIENTO == "ANGIOPLASTIA")
+numNotObeseAng <- dim(notObesesAng)[1]
+notObesesSur <- subset(notObeses, notObeses$PROCEDIMIENTO == "CIRUGIA")
+numNotObesesSur<- dim(notObesesSur)[1]
+Angioplastia <- c(numObesesAng, numNotObeseAng)
+Surgery <- c(numObesesSur, numNotObesesSur)
+data <- data.frame(Condition, Angioplastia, Surgery)
+fig <- plot_ly(data, x = ~Condition, y = ~Angioplastia, type = 'bar', name = 'Angioplasty', marker = list(color = 'maroon'), text = Angioplastia, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~Surgery, name = 'Surgery', marker = list(color = 'mistyrose'), text = Surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), xaxis = list(title = 'Obesity') , barmode = 'group')
+fig
+```
+## {.unnumbered}
+
+
+## Reasons for admission analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+The reasons for admission that we are interested in analyzing are the programmed ones, and the non-SST ACS (acute coronary syndrome), since they are those in which there is time to think about which procedure is more convenient for the patient, obtaining more reliable data.
+
+
+### Patients' admission reasons {- .unnumbered}
+
+The graph shows a greater number of patients whose admission has been programmed, and the procedure preference of each case can be seen with the naked eye.
+
+```{r admission, echo=FALSE}
+## SCA no SST (ready)
+scaNoSstAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA no SST" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA") 
+numscaNoSstAng <- dim(scaNoSstAng)[1]
+scaNoSstSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA no SST" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numscaNoSstSur <- dim(scaNoSstSur)[1]
+##PROG VALV (ready)
+progValvAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG VALV" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numprogValvAng <- dim(progValvAng)[1]
+progValvSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG VALV" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numsprogValvSur <- dim(progValvSur)[1]
+##PROG CORONARIO (ready)
+progCoroAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG CORONARIO" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numprogCoroAng <- dim(progCoroAng)[1]
+progCoroSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG CORONARIO" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numsprogCoroSur <- dim(progCoroSur)[1]
+##ANEURISMA AO (ready)
+aneurismaAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "ANEURISMA AO" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+aneurismaSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "ANEURISMA AO" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numaneurismaAng <- dim(aneurismaAng)[1]
+##CIA (ready)
+numaneurismaSur <- dim(aneurismaSur)[1]
+ciaAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "CIA" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+ciaSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "CIA" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numciaSur <- dim(ciaSur)[1]
+numciaAng <- dim(ciaAng)[1]
+##OTRA (ready)
+otraAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "OTRA" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numotraAng <- dim(otraAng)[1]
+otraSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "OTRA" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numotraSur <- dim(otraSur)[1]
+##MIXOMA Y OTROS TUMORES (ready)
+mixAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "MIXOMA Y OTROS TUMORES" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+nummixAng <- dim(mixAng)[1]
+mixSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "MIXOMA Y OTROS TUMORES" & dataset$PROCEDIMIENTO == "CIRUGIA")
+nummixSur <- dim(mixSur)[1]
+##HTPULMONAR (ready)
+htAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "HTPULMONAR" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numhtAng <- dim(htAng)[1]
+htSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "HTPULMONAR" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numhtSur <- dim(htSur)[1]
+scaAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA SST" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+##SCA SST (ready)
+numscaAng <- dim(scaAng)[1]
+scaSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA SST" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numscaSur <- dim(scaSur)[1]
+##SINCOPE (ready)
+sincSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SINCOPE" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numsincSur <- dim(sincSur)[1]
+sincAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SINCOPE" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numsincAng <- dim(sincAng)[1]
+##INSUFICIENCA CARDIACA (ready)
+insuAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "INSUFICIENCIA CARDIACA" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numinsuAng <- dim(insuAng)[1]
+insuSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "INSUFICIENCIA CARDIACA" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numinsuSur <- dim(insuSur)[1]
+##PROGRAMADO TRAVI (ready)
+traviAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROGRAMADO TRAVI" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numtraviAng <- dim(traviAng)[1]
+traviSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROGRAMADO TRAVI" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numtraviSur <- dim(traviSur)[1]
+##MIECTOMIA (ready)
+miectoAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "MIECTOMIA" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+nummiectoAng <- dim(miectoAng)[1]
+miectoSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "MIECTOMIA" & dataset$PROCEDIMIENTO == "CIRUGIA")
+nummiectoSur <- dim(miectoSur)[1]
+AdmissionReasons <- c("SCA no SST", "PROG VALV", "PROG CORONARIO", "ANEURISMA AO", "CIA", "OTRA", "MIXOMA Y OTROS TUMORES", "HTPULMONAR", "SCA SST", "SINCOPE", "INSUFICIENCIA CARDIACA", "PROGRAMADO TAVI", "MIECTOMIA")
+Angioplasty <- c(numscaNoSstAng, numprogValvAng, numprogCoroAng, numaneurismaAng, numciaAng, numotraAng, nummixAng, numhtAng, numscaAng, numsincAng, numinsuAng, numtraviAng, nummiectoAng)
+Surgery <- c(numscaNoSstSur, numsprogValvSur, numsprogCoroSur, numaneurismaSur, numciaSur, numotraSur, nummixSur, numhtSur, numscaSur, numsincSur, numinsuSur, numtraviSur, nummiectoSur)
+data <- data.frame(AdmissionReasons, Angioplasty, Surgery, check.rows = TRUE)
+fig <- plot_ly(data, x = ~AdmissionReasons, y = ~Angioplasty, type = 'bar', name = 'Angioplasty', marker = list(color = 'tomato'), text = Angioplasty, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~Surgery, name = 'Surgery', marker = list(color = 'maroon'), text = Surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), xaxis = list(title = 'Admission Reason'), barmode = 'group')
+fig
+```
+
+### Procedure according to schedule admissions {- .unnumbered}
+
+```{r admissionP, echo=FALSE}
+## SCA no SST (ready)
+scaNoSstAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA no SST" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA") 
+numscaNoSstAng <- dim(scaNoSstAng)[1]
+scaNoSstSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "SCA no SST" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numscaNoSstSur <- dim(scaNoSstSur)[1]
+##PROG VALV (ready)
+progValvAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG VALV" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numprogValvAng <- dim(progValvAng)[1]
+progValvSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG VALV" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numsprogValvSur <- dim(progValvSur)[1]
+##PROG CORONARIO (ready)
+progCoroAng <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG CORONARIO" & dataset$PROCEDIMIENTO == "ANGIOPLASTIA")  
+numprogCoroAng <- dim(progCoroAng)[1]
+progCoroSur <- subset(dataset, dataset$`MOTIVO DE INGRESO`== "PROG CORONARIO" & dataset$PROCEDIMIENTO == "CIRUGIA")
+numsprogCoroSur <- dim(progCoroSur)[1]
+programado <- c("SCA no SST", "PROG VALV", "PROG CORONARIO")
+angioplasy <- c(numscaNoSstAng, numprogValvAng, numprogCoroAng)
+surgery <- c(numscaNoSstSur, numsprogValvSur, numsprogCoroSur)
+data <- data.frame(programado, angioplasy, surgery, check.rows = TRUE)
+fig <- plot_ly(data, x = ~programado, y = ~angioplasy, type = 'bar', name = 'Angioplasty', marker = list(color = 'tomato'), text = angioplasy, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~surgery, name = 'Surgery', marker = list(color = 'maroon'), text = surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), xaxis = list(title = 'Scheduled admissions'), barmode = 'group')
+fig
+```
+## {.unnumbered}
+
+
+## Chronic obstructive pulmonary disease analysis {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+Chronic obstructive pulmonary disease (COPD/EPOC) is the third leading cause of death.  
+
+### EPOC population {- .unnumbered}
+
+More than 11 million Americans are diagnosed with COPD and it is estimated a 13 million people live with this undiagnosed disease ([*COPD Advanced Patient Management. CME Resource Center*](https://www.sciencedirect.com/science/article/abs/pii/S0012369218305774)). Here we identify population with COPD in our dataset.
+
+```{r epoc1, echo=FALSE}
+epoc <- dim(subset(dataset, dataset$EPOC == 1))[1]
+epocPerc <- round(epoc / length(dataset) *100,2)
+nonEpoc <- 100 - epocPerc 
+labels = c('EPOC patients','Non EPOC patients')
+values = c(epocPerc, nonEpoc)
+colors <- c('rgb(102, 0, 0)', 'rgb(255, 229, 166)')
+fig <- plot_ly(type='pie', labels=labels, values=values, 
+               textinfo='label+percent',
+                 marker=list(colors=colors),
+               insidetextorientation='radial')
+fig
+
+```
+
+### Procedure of patients with EPOC {- .unnumbered}
+
+In this graphic we analyze patients' procedures according to if they have COPD disease or not.
+
+```{r epoc2, echo=FALSE}
+epocSurg <- dim(subset(dataset, dataset$EPOC == 1 & dataset$PROCEDIMIENTO == "CIRUGIA"))[1]
+epocAngio <- dim(subset(dataset, dataset$EPOC == 1 & dataset$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+nonEpocSurg <- dim(subset(dataset, dataset$EPOC == 0 & dataset$PROCEDIMIENTO == "CIRUGIA"))[1]
+nonEpocAngio <- dim(subset(dataset, dataset$EPOC == 0 & dataset$PROCEDIMIENTO == "ANGIOPLASTIA"))[1]
+  
+  
+AdmissionReasons <- c("EPOC patients", "Non EPOC patients")
+Angioplasty <- c(epocAngio, nonEpocAngio)
+Surgery <- c(epocSurg,nonEpocSurg)
+data <- data.frame(AdmissionReasons, Angioplasty, Surgery)
+
+fig <- plot_ly(data, x = ~AdmissionReasons, y = ~Angioplasty, type = 'bar', name = 'Angioplasty', marker = list(color = 'maroon'), text = Angioplasty, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~Surgery, name = 'Surgery',  marker = list(color = 'moccasin'), text = Surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), xaxis = list(title = 'Conditions'), barmode = 'group')
+
+fig
+```
+## {.unnumbered}
+
+
+# Interpretation
+
+
+#### Percentage of procedure of patients with 3/2/1 injured blood vessels 
+
+According to a clinical study carried out in Mexico by [*Carlos A Solis-Olivares and Juan M Solis-Soto*](http://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S0188-21982012000200004), in the last three decades, percutaneous coronary intervention (PCI) has overtaken coronary artery bypass grafting (CRVC) as the preferred treatment modality for atherosclerotic ischemic heart disease (IC) in the world. The effectiveness of PCI in the treatment of significant myocardial ischemia caused by focal occlusion of one or two coronary vessels is unquestionable. However, its results in the treatment of multivessel coronary disease (CVD), defined as the obstruction of three coronary arteries or of two with involvement of the proximal portion of the left anterior descending artery (LAD), have been less satisfactory.
+
+An observational, ambispective study was conducted, with longitudinal and comparative follow-up of a number of patients with a diagnosis of CVD treated by CRVC. The objective of this study was to compare the clinical evolution of these patients after their percutaneous or surgical revascularization. Finally, the results indicate that those patients with a higher cardiovascular risk, more complex coronary anatomy and trivascular disease, generally receive treatment with CRVC, with PCI being used more frequently in patients with lesions of two coronary arteries.
+
+<div style="display:flex">
+```{r firstI, figures-side, fig.show="hold", out.width="33%", echo=FALSE}
+
+# 1 vasos
+pacientes1vasosSubset <- subset(dataset, dataset$`Resumen Coronariopatia` == "1 vaso")
+pacientes1vasosNum <- length(which(dataset$`Resumen Coronariopatia` == "1 vaso"))
+cirugiaY1vasosNum <- length(which(pacientes1vasosSubset$PROCEDIMIENTO == "CIRUGIA"))
+angioY1vasosNum <- length(which(pacientes1vasosSubset$PROCEDIMIENTO == "ANGIOPLASTIA"))
+cirY1vasosPerc <- round((100*cirugiaY1vasosNum)/pacientes1vasosNum,2)
+angioY1vasosPerc <- round((100*angioY1vasosNum)/pacientes1vasosNum,2)
+cirvaso1Percc <- paste(cirY1vasosPerc, "%", sep = "")
+angiovaso1Percc <- paste(angioY1vasosPerc, "%", sep = "")
+cironebv <- paste("Surgery", cirvaso1Percc)
+angioonebv <- paste("Angioplasty", angiovaso1Percc)
+plot_ly(
+  labels = c("1 blood vessel", angioonebv, cironebv),
+  parents = c("", "1 blood vessel", "1 blood vessel"),
+  values = c(0, angioY1vasosPerc, cirY1vasosPerc),
+  type = 'sunburst',
+  marker=list(colorscale='YIOrRd')
+)
+# 2 vasos
+pacientes2vasosSubset <- subset(dataset, dataset$`Resumen Coronariopatia` == "2 vasos")
+pacientes2vasosNum <- length(which(dataset$`Resumen Coronariopatia` == "2 vasos"))
+cirugiaY2vasosNum <- length(which(pacientes2vasosSubset$PROCEDIMIENTO == "CIRUGIA"))
+angioY2vasosNum <- length(which(pacientes2vasosSubset$PROCEDIMIENTO == "ANGIOPLASTIA"))
+cirY2vasosPerc <- round((100*cirugiaY2vasosNum)/pacientes2vasosNum,2)
+angioY2vasosPerc <- round((100*angioY2vasosNum)/pacientes2vasosNum,2)
+cirvaso2Percc <- paste(cirY2vasosPerc, "%", sep = "")
+angiovaso2Percc <- paste(angioY2vasosPerc, "%", sep = "")
+cirdosbv <- paste("Surgery", cirvaso2Percc)
+angiodosbv <- paste("Angioplasty", angiovaso2Percc)
+
+plot_ly(
+  labels = c("2 blood vessels", angiodosbv, cirdosbv),
+  parents = c("", "2 blood vessels", "2 blood vessels"),
+  values = c(0, angioY2vasosPerc, cirY2vasosPerc),
+  type = 'sunburst',
+  marker=list(colorscale='YIOrRd')
+)
+# 3 vasos
+pacientes3vasosSubset <- subset(dataset, dataset$`Resumen Coronariopatia` == "3 vasos")
+pacientes3vasosNum <- length(which(dataset$`Resumen Coronariopatia` == "3 vasos"))
+cirugiaY3vasosNum <- length(which(pacientes3vasosSubset$PROCEDIMIENTO == "CIRUGIA"))
+angioY3vasosNum <- length(which(pacientes3vasosSubset$PROCEDIMIENTO == "ANGIOPLASTIA"))
+cirY3vasosPerc <- round((100*cirugiaY3vasosNum)/pacientes3vasosNum,2)
+angioY3vasosPerc <- round((100*angioY3vasosNum)/pacientes3vasosNum,2)
+cirvaso3Percc <- paste(cirY3vasosPerc, "%", sep = "")
+angiovaso3Percc <- paste(angioY3vasosPerc, "%", sep = "")
+cirtresbv <- paste("Surgery", cirvaso3Percc)
+angiotresbv <- paste("Angioplasty", angiovaso3Percc)
+
+plot_ly(
+  labels = c("3 blood vessels",cirtresbv, angiotresbv),
+  parents = c("", "3 blood vessels", "3 blood vessels"),
+  values = c(0, cirY3vasosPerc, angioY3vasosPerc),
+  type = 'sunburst',
+  marker=list(colorscale='YIOrRd')
+)
+```
+</div>
+
+
+The next graph is a summary of some of the variables analyzed before.
+
+```{r secondI, echo=FALSE}
+angioplastiasTotales <- subset(dataset, dataset$PROCEDIMIENTO == "ANGIOPLASTIA") 
+cirujiasTotal <- subset(dataset, dataset$PROCEDIMIENTO == "CIRUGIA")
+
+# obesidad
+angioplastiaObesos <- subset(angioplastiasTotales, angioplastiasTotales$`OBESIDAD MORBIDA` == "1")
+numangioplastiaObesos <- dim(angioplastiaObesos)[1]
+cirujiaObesos <- subset (cirujiasTotal, cirujiasTotal$`OBESIDAD MORBIDA` == "1")
+numcirujiaObesos <- dim(cirujiaObesos)[1]
+# diabetes
+angioplastiaDiabetes <- subset(angioplastiasTotales, angioplastiasTotales$DIABETES == "1")
+numangioplastiaDiabetes <- dim(angioplastiaDiabetes)[1]
+cirujiaDiabetes <- subset (cirujiasTotal, cirujiasTotal$DIABETES == "1")
+numcirujiaDiabetes <- dim(cirujiaDiabetes)[1]
+# hypertension pulmonar
+angioplastiaHipertension <- subset(angioplastiasTotales, angioplastiasTotales$`HIPERTENSION PULMONAR` == "1")
+numangioplastiaHipertension <- dim(angioplastiaHipertension)[1]
+cirujiaHipertension <- subset (cirujiasTotal, cirujiasTotal$`HIPERTENSION PULMONAR` == "1")
+numscirujiaHipertension <- dim(cirujiaHipertension)[1]
+#cca
+angioplastiaCCA <- subset(angioplastiasTotales, angioplastiasTotales$`ANATOMIA CORONARIA COMPLEJA` == "1")
+numangioplastiaCCA <- dim(angioplastiaCCA)[1]
+cirujiaCCA <- subset (cirujiasTotal, cirujiasTotal$`ANATOMIA CORONARIA COMPLEJA` == "1")
+numcirujiaCCA <- dim(cirujiaCCA)[1]
+#epoc
+angioplastiaEPOC <- subset(angioplastiasTotales, angioplastiasTotales$EPOC == "1")
+numangioplastiaEPOC <- dim(angioplastiaEPOC)[1]
+cirujiaEPOC <- subset (cirujiasTotal, cirujiasTotal$EPOC == "1")
+numcirujiaEPOC <- dim(cirujiaEPOC)[1]
+
+
+AdmissionReasons <- c("Obeses", "Diabetic", "Pulmonary Hypertension", "Complex cronary anatomy", "EPOC")
+Angioplasty <- c(numangioplastiaObesos,numangioplastiaDiabetes,numangioplastiaHipertension, numangioplastiaCCA, numangioplastiaEPOC)
+Surgery <- c(numcirujiaObesos,numcirujiaDiabetes,numscirujiaHipertension, numcirujiaCCA, numcirujiaEPOC)
+data <- data.frame(AdmissionReasons, Angioplasty, Surgery)
+
+fig <- plot_ly(data, x = ~AdmissionReasons, y = ~Angioplasty, type = 'bar', name = 'Angioplasty', marker = list(color = 'tomato'), text = Angioplasty, textposition = 'auto')
+fig <- fig %>% add_trace(y = ~Surgery, name = 'Surgery',  marker = list(color = 'maroon'), text = Surgery, textposition = 'auto')
+fig <- fig %>% layout(yaxis = list(title = 'Number of people'), xaxis = list(title = 'Conditions'), barmode = 'group')
+
+fig
+```
+
+
+# Predictor
+
+#### Variables election
+
+Variables were chosen taking into account the information previously analyzed. However, not all variables were selected in order to generate the predictor. Pulmonary hypertension, obesity or chronic obstructive pulmonary disease are some examples. This variables do not contain enough information  to make an accurate prediction.
+
+Ages were separated into intervals of young adults (0-30 years old), adults (31-55 years old) and elderly (56-100 years old). It was considered that elderly population are in a higher risk during a surgery, that is why major procedure in this age interval is angioplasty.
+
+Number of injured blood vessels was considered as analysis showed patients with one blood vessel involved have a major tendency to experience angioplasty rather than surgery. In contrast, three injured blood vessels were related to patients undergoing surgery.
+
+It was kept into account that the admissions' reasons with more prevalence were coronary programations, valv. programations and non-SST ACS (acute coronary syndrome). Predictions were made with these three admissions' reasons. 
+
+Patients' conditions such as diabetes are considered for predictions as is categorized as high risk factor and must be handled minutely.
+
+COPD is the third leading cause of death in the United States thus it has been contemplated as a main variable in our predictions. 
+
+#### Model election
+
+We have chosen the Random Forest Model for the predictor because it was considered the most suitable for the dataset.
+Once generated the model, it was tested using the data of 346 patients. From these, our model predicted surgery with an error of 24% while angioplasty was predicted with an error of 9%.
+
+
+```{r predictor, echo=FALSE, out.width="60%", fig.align='center'}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/predictor.png")
+```
+
+#### AUROC curve
+
+The AUROC curve represent the ratios between false positives and false negatives.
+
+```{r auroc, echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/image.png")
+```
+
+# Authors
+
+<div style="display:flex">
+
+```{r e, echo=FALSE, out.width="80%", fig.cap="[*Agustina Verschoor*](mailto: agustina.verschoor@ing.austral.edu.ar)"}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/Picture9.jpg")
+```
+
+```{r a, echo=FALSE, out.width="80%", fig.cap="[*Sofia Tartara Moroni*](mailto: sofia.tartara@ing.austral.edu.ar)"}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/Picture12.jpg")
+```
+
+```{r b, echo=FALSE, out.width="80%", fig.cap="[*Justina Galarce*](mailto: justina.galarce@ing.austral.edu.ar)"}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/Picture10.jpg")
+```
+
+```{r c, echo=FALSE, out.width="80%", fig.cap="[*Solange Blacutt*](mailto: solange.blacutt@ing.austral.edu.ar)"}
+knitr::include_graphics("C:/Users/solyb/Subjects/R/Algoritmos/heartData/pictures/Picture14.jpg")
+```
+
+</div>
